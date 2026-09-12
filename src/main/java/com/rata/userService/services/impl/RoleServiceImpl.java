@@ -4,9 +4,12 @@ import com.rata.userService.dto.responseFiltering.PageResponse;
 import com.rata.userService.errorHandling.ResourceNotFoundException;
 import com.rata.userService.models.Application;
 import com.rata.userService.models.Role;
+import com.rata.userService.models.docs.RoleGrid;
 import com.rata.userService.records.CreateRoleRequest;
 import com.rata.userService.records.RoleResponse;
 import com.rata.userService.records.UpdateRoleRequest;
+import com.rata.userService.records.newRecords.RoleSearchCriteria;
+import com.rata.userService.repositories.mongodb.RoleGridRepository;
 import com.rata.userService.repositories.mysql.ApplicationRepository;
 import com.rata.userService.repositories.mysql.RoleRepository;
 import com.rata.userService.services.interfaces.RoleService;
@@ -23,6 +26,7 @@ public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
     private final ApplicationRepository applicationRepository;
+    private final RoleGridRepository roleGridRepository;
 
     @Override
     public RoleResponse createRole(CreateRoleRequest request) {
@@ -39,6 +43,10 @@ public class RoleServiceImpl implements RoleService {
         }
 
         Role savedRole = roleRepository.save(role);
+        
+        // Sync to MongoDB
+        syncRoleToGrid(savedRole);
+        
         return toResponse(savedRole);
     }
 
@@ -59,13 +67,17 @@ public class RoleServiceImpl implements RoleService {
         }
 
         Role updatedRole = roleRepository.save(role);
+        
+        // Sync to MongoDB
+        syncRoleToGrid(updatedRole);
+        
         return toResponse(updatedRole);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<RoleResponse> getRoles(Pageable pageable) {
-        Page<Role> page = roleRepository.findAll(pageable);
+    public PageResponse<RoleGrid> getRoles(RoleSearchCriteria criteria, Pageable pageable) {
+        Page<RoleGrid> page = roleGridRepository.searchRoles(criteria, pageable);
         return toPageResponse(page);
     }
 
@@ -85,6 +97,9 @@ public class RoleServiceImpl implements RoleService {
         }
         
         roleRepository.delete(role);
+        
+        // Delete from MongoDB
+        roleGridRepository.deleteByRoleId(role.getId());
     }
 
     private Role getRoleById(Long id) {
@@ -105,13 +120,30 @@ public class RoleServiceImpl implements RoleService {
         );
     }
 
-    private PageResponse<RoleResponse> toPageResponse(Page<Role> page) {
-        PageResponse<RoleResponse> response = new PageResponse<>();
-        response.setContent(page.getContent().stream().map(this::toResponse).toList());
+    private PageResponse<RoleGrid> toPageResponse(Page<RoleGrid> page) {
+        PageResponse<RoleGrid> response = new PageResponse<>();
+        response.setContent(page.getContent());
         response.setPage(page.getNumber());
         response.setSize(page.getSize());
         response.setTotalPages(page.getTotalPages());
         response.setTotalSize(page.getTotalElements());
         return response;
+    }
+    
+    private void syncRoleToGrid(Role role) {
+        RoleGrid grid = RoleGrid.builder()
+                .roleId(role.getId())
+                .appId(role.getApp() != null ? role.getApp().getId() : null)
+                .name(role.getName())
+                .code(role.getCode())
+                .description(role.getDescription())
+                .systemRole(role.isSystemRole())
+                .status(role.isEnabled())
+                .build();
+        
+        roleGridRepository.findByRoleId(role.getId())
+                .ifPresent(existing -> grid.setId(existing.getId()));
+        
+        roleGridRepository.save(grid);
     }
 }

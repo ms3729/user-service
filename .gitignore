@@ -4,12 +4,12 @@
 *.o
 *.obj
 *.out
-build/
-target/
 
 # Dependencies
+target/
+.mypy_cache/
+.pytest_cache/
 .gradle/
-lib/
 
 # Logs and temp files
 *.log
@@ -24,9 +24,13 @@ lib/
 # Editors
 .vscode/
 .idea/
-*.swp
-*.swo
 
-# Package manager
-node_modules/
+# Coverage reports
+coverage/
+htmlcov/
+.coverage
+
+# System files
+.DS_Store
+Thumbs.db
 ```
