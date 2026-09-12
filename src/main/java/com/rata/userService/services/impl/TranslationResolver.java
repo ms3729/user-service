@@ -1,4 +1,4 @@
-package com.rata.userService.services.impl.query;
+package com.rata.userService.services.impl;
 
 import com.rata.userService.config.LanguageHelper;
 

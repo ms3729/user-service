@@ -1,4 +1,4 @@
-package com.rata.userService.services.impl.command;
+package com.rata.userService.services.impl;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,14 +6,14 @@ import com.rata.userService.config.MQConfig;
 import com.rata.userService.dto.MessageDTO;
 import com.rata.userService.enums.MessageLevel;
 import com.rata.userService.enums.MessageType;
-import com.rata.userService.services.interfaces.command.MessageCommandService;
+import com.rata.userService.services.interfaces.MessageService;
 import lombok.AllArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class MessageCommandServiceImpl implements MessageCommandService {
+public class MessageServiceImpl implements MessageService {
 
     private final RabbitTemplate template;
     private final ObjectMapper objectMapper;

@@ -2,8 +2,7 @@ package com.rata.userService.controllers;
 
 import com.rata.userService.dto.VerificationDTO;
 import com.rata.userService.records.ResponseResult;
-import com.rata.userService.services.interfaces.command.VerificationCommandService;
-import com.rata.userService.services.interfaces.query.VerificationQueryService;
+import com.rata.userService.services.interfaces.VerificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class VerificationController {
 
-    private final VerificationQueryService verificationQueryService;
-    private final VerificationCommandService verificationCommandService;
+    private final VerificationService verificationService;
 
     @GetMapping("/identifier-code/{identifierCode}/sms-code/{smsCode}/data/{data}")
     public ResponseEntity<?> checkCode(@PathVariable String identifierCode,
@@ -32,17 +30,17 @@ public class VerificationController {
             jsonObject.put("carry_cargo_count", carryCargoCount);
             data = jsonObject.toString();
         }
-        return new ResponseEntity<>(new ResponseResult("", verificationQueryService.checkVerificationCode(identifierCode, smsCode, data)), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseResult("", verificationService.checkVerificationCode(identifierCode, smsCode, data)), HttpStatus.OK);
     }
 
     @Operation(summary = "send verificationCode")
     @PostMapping(value = "/send")
     public ResponseEntity<?> sendVerificationCode(@RequestBody VerificationDTO dto) {
-        String verificationCode = verificationQueryService.checkValidityResendSms(dto.getData());
+        String verificationCode = verificationService.checkValidityResendSms(dto.getData());
         if (verificationCode != null) {
             return new ResponseEntity<>(new ResponseResult("error.resend_verification_send_timeout", verificationCode), HttpStatus.TOO_MANY_REQUESTS);
         }
-        return new ResponseEntity<>(new ResponseResult("", verificationCommandService.save(dto)), HttpStatus.CREATED);
+        return new ResponseEntity<>(new ResponseResult("", verificationService.save(dto)), HttpStatus.CREATED);
     }
 
 }

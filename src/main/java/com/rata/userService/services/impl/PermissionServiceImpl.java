@@ -1,9 +1,9 @@
-package com.rata.userService.services.impl.query;
+package com.rata.userService.services.impl;
 
 import com.rata.userService.dto.PermissionDTO;
 import com.rata.userService.models.Permission;
 import com.rata.userService.repositories.mysql.PermissionRepository;
-import com.rata.userService.services.interfaces.query.PermissionQueryService;
+import com.rata.userService.services.interfaces.PermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -14,20 +14,10 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class PermissionQueryServiceImpl implements PermissionQueryService {
+public class PermissionServiceImpl implements PermissionService {
 
     private final PermissionRepository permissionRepository;
 
-
-    @Override
-    public Optional<Permission> find(Long id) {
-        return permissionRepository.findById(id);
-    }
-
-    @Override
-    public List<Permission> findAll() {
-        return permissionRepository.findAll();
-    }
 
     @Override
     public Optional<PermissionDTO> findById(long id) {

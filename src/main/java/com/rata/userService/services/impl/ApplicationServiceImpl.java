@@ -1,4 +1,4 @@
-package com.rata.userService.services.impl.query.gridSearch;
+package com.rata.userService.services.impl;
 
 import com.rata.userService.records.ApplicationRecord;
 import com.rata.userService.repositories.mysql.ApplicationRepository;

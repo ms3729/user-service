@@ -8,8 +8,7 @@ import com.rata.userService.models.User;
 import com.rata.userService.records.ResponseResult;
 import com.rata.userService.records.TokenRecord;
 import com.rata.userService.services.interfaces.UserService;
-import com.rata.userService.services.interfaces.command.VerificationCommandService;
-import com.rata.userService.services.interfaces.query.VerificationQueryService;
+import com.rata.userService.services.interfaces.VerificationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -36,14 +35,13 @@ public class AuthenticateController {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
-    private final VerificationQueryService verificationQueryService;
-    private final VerificationCommandService verificationCommandService;
+    private final VerificationService verificationService;
     private final Environment env;
 
 
     @PostMapping(value = "/user-validate", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> authenticateAndGetToken(@RequestBody UserValidate userValidate) {
-        boolean validateSms = verificationQueryService.checkVerificationCode(userValidate.getIdentifierCode(), userValidate.getSmsCode(), userValidate.getUsername());
+        boolean validateSms = verificationService.checkVerificationCode(userValidate.getIdentifierCode(), userValidate.getSmsCode(), userValidate.getUsername());
         if (validateSms) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             List<String> roles = authentication.getAuthorities().stream()
@@ -76,11 +74,11 @@ public class AuthenticateController {
             if (user.isEmpty()) {
                 return new ResponseEntity<>("user not found", HttpStatus.NOT_FOUND);
             } else {
-                String verificationCode = verificationQueryService.checkValidityResendSms(authRequest.getUsername());
+                String verificationCode = verificationService.checkValidityResendSms(authRequest.getUsername());
                 if (verificationCode != null) {
                     return new ResponseEntity<>(new ResponseResult(env.getProperty("error.resend_verification_send_timeout"), verificationCode), HttpStatus.TOO_MANY_REQUESTS);
                 }
-                return new ResponseEntity<>(new ResponseResult("", verificationCommandService.saveLogin(user.get())), HttpStatus.CREATED);
+                return new ResponseEntity<>(new ResponseResult("", verificationService.saveLogin(user.get())), HttpStatus.CREATED);
             }
         } else {
             throw new UsernameNotFoundException("invalid user request !");

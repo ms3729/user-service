@@ -3,8 +3,8 @@ package com.rata.userService.config.authentication;
 import com.rata.userService.config.aspect.LogRecord;
 import com.rata.userService.models.Token;
 import com.rata.userService.records.TokenRecord;
-import com.rata.userService.services.impl.command.TokenCommandServiceImpl;
-import com.rata.userService.services.interfaces.query.UserSessionHistoryQueryService;
+import com.rata.userService.services.interfaces.TokenService;
+import com.rata.userService.services.interfaces.UserSessionHistoryService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -27,9 +27,9 @@ import java.util.function.Function;
 public class JwtService {
 
     public static final String SECRET = "5367566B59bB03373367639792F423F4528482B4D6251655468576D5A71347437";
-    private final TokenCommandServiceImpl tokenCommandService;
+    private final TokenService tokenService;
     private final UserInfoService userInfoService;
-    private final UserSessionHistoryQueryService userSessionHistoryQueryService;
+    private final UserSessionHistoryService userSessionHistoryService;
 
     public TokenRecord generateToken(List<String> roles, String userName) {
         Map<String, Object> claims = new HashMap<>();
@@ -50,7 +50,7 @@ public class JwtService {
                 .setExpiration(expirationDate)
                 .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
 
-        Token token = tokenCommandService.findById(userName);
+        Token token = tokenService.findById(userName);
         if (token == null) {
             token = new Token();
         }
@@ -58,8 +58,8 @@ public class JwtService {
         token.setExpiration(extractExpiration(tokenString));
         token.setAccess(tokenString);
         token.setRefresh(UUID.randomUUID().toString());
-        tokenCommandService.save(token);
-        userSessionHistoryQueryService.save(userName, extractIssueDate(tokenString));
+        tokenService.save(token);
+        userSessionHistoryService.save(userName, extractIssueDate(tokenString));
         return new TokenRecord(token.getAccess(), token.getRefresh());
     }
 
@@ -115,7 +115,7 @@ public class JwtService {
 
     public boolean validateUser(String token) {
         final String username = extractUsername(token);
-        Token cachedToken = tokenCommandService.findById(username);
+        Token cachedToken = tokenService.findById(username);
         return cachedToken != null &&
                 Objects.equals(cachedToken.getAccess(), token) &&
                 extractExpiration(token).getTime() == cachedToken.getExpiration().getTime() &&
@@ -134,7 +134,7 @@ public class JwtService {
         try {
             Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(authToken);
             String username = extractUsername(authToken);
-            Token token = tokenCommandService.findById(username);
+            Token token = tokenService.findById(username);
             if (token.getAccess().equals(authToken)) {
                 return username;
             } else {

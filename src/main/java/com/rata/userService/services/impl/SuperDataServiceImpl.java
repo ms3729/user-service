@@ -1,18 +1,18 @@
-package com.rata.userService.services.impl.query;
+package com.rata.userService.services.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rata.userService.dto.ZoneFilter;
 import com.rata.userService.records.superData.BankRecord;
 import com.rata.userService.records.superData.ZoneRecord;
-import com.rata.userService.services.interfaces.query.SuperDataQueryService;
+import com.rata.userService.services.interfaces.SuperDataService;
 import lombok.AllArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class SuperDataQueryServiceImpl implements SuperDataQueryService {
+public class SuperDataServiceImpl implements SuperDataService {
 
     private final RabbitTemplate amqpTemplate;
     private final ObjectMapper objectMapper;

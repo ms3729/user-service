@@ -1,13 +1,12 @@
-package com.rata.userService.services.interfaces.query;
+package com.rata.userService.services.interfaces;
 
 import com.rata.userService.dto.PermissionDTO;
 import com.rata.userService.models.Permission;
-import com.rata.userService.services.interfaces.BasicQueryService;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface PermissionQueryService  extends BasicQueryService<Permission, Long> {
+public interface PermissionService  {
 
     Optional<PermissionDTO> findById(long id);
 

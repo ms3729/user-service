@@ -9,8 +9,8 @@ import com.rata.userService.errorHandling.DuplicateResourceException;
 import com.rata.userService.models.User;
 import com.rata.userService.models.party.Party;
 import com.rata.userService.repositories.mysql.UserRepository;
+import com.rata.userService.services.interfaces.MessageService;
 import com.rata.userService.services.interfaces.UserService;
-import com.rata.userService.services.interfaces.command.MessageCommandService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final MessageCommandService messageCommandService;
+    private final MessageService messageService;
 
     @Transactional
     @Override
@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
             Map<String, String> data = new HashMap<>();
             data.put("password", password);
             message.setData(data);
-            messageCommandService.sendSms(message);
+            messageService.sendSms(message);
         }
     }
 

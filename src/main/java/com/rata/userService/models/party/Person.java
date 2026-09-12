@@ -3,7 +3,7 @@ package com.rata.userService.models.party;
 import com.rata.userService.config.LanguageHelper;
 import com.rata.userService.enums.EducationLevel;
 import com.rata.userService.models.BaseEntity;
-import com.rata.userService.services.impl.query.TranslationResolver;
+import com.rata.userService.services.impl.TranslationResolver;
 import jakarta.persistence.*;
 import lombok.*;
 

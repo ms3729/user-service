@@ -1,8 +1,8 @@
-package com.rata.userService.services.impl.query;
+package com.rata.userService.services.impl;
 
 import com.rata.userService.models.docs.UserSessionHistory;
-import com.rata.userService.repositories.mongodb.UserSessionHistoryQueryRepo;
-import com.rata.userService.services.interfaces.query.UserSessionHistoryQueryService;
+import com.rata.userService.repositories.mongodb.UserSessionHistoryRepository;
+import com.rata.userService.services.interfaces.UserSessionHistoryService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,9 +12,9 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserSessionHistoryQueryServiceImpl implements UserSessionHistoryQueryService {
+public class UserSessionHistoryServiceImpl implements UserSessionHistoryService {
 
-    private final UserSessionHistoryQueryRepo userSessionHistoryQueryRepo;
+    private final UserSessionHistoryRepository userSessionHistoryRepository;
     private final HttpServletRequest request;
 
     @Override
@@ -24,11 +24,11 @@ public class UserSessionHistoryQueryServiceImpl implements UserSessionHistoryQue
         history.setLoginDate(issueDate);
         history.setSystemInfo(request.getHeader("user-agent"));
         history.setIp(request.getHeader("X-Forwarded-For"));
-        return userSessionHistoryQueryRepo.save(history);
+        return userSessionHistoryRepository.save(history);
     }
 
     @Override
     public List<UserSessionHistory> findAllByUsername(String username) {
-        return userSessionHistoryQueryRepo.findAllByUsernameOrderByLoginDateDesc(username);
+        return userSessionHistoryRepository.findAllByUsernameOrderByLoginDateDesc(username);
     }
 }

@@ -1,8 +1,8 @@
-package com.rata.userService.services.interfaces.command;
+package com.rata.userService.services.interfaces;
 
 import com.rata.userService.dto.MessageDTO;
 
-public interface MessageCommandService {
+public interface MessageService {
 
     void sendChangePermissionNotification(String username);
 

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface UserSessionHistoryQueryRepo extends MongoRepository<UserSessionHistory, Long> {
+public interface UserSessionHistoryRepository extends MongoRepository<UserSessionHistory, Long> {
 
     List<UserSessionHistory> findAllByUsernameOrderByLoginDateDesc(String username);
 }

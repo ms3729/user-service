@@ -1,11 +1,11 @@
-package com.rata.userService.services.interfaces.query;
+package com.rata.userService.services.interfaces;
 
 import com.rata.userService.models.docs.UserSessionHistory;
 
 import java.util.Date;
 import java.util.List;
 
-public interface UserSessionHistoryQueryService {
+public interface UserSessionHistoryService {
 
     UserSessionHistory save(String username, Date issueDate);
 

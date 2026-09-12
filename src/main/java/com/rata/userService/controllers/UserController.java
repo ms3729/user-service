@@ -5,7 +5,7 @@ import com.rata.userService.models.User;
 import com.rata.userService.models.docs.UserSessionHistory;
 import com.rata.userService.records.ResponseResult;
 import com.rata.userService.services.interfaces.UserService;
-import com.rata.userService.services.interfaces.query.UserSessionHistoryQueryService;
+import com.rata.userService.services.interfaces.UserSessionHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class UserController {
 
     private final UserService userService;
     private final JwtService jwtService;
-    private final UserSessionHistoryQueryService userSessionHistoryQueryService;
+    private final UserSessionHistoryService userSessionHistoryService;
 
 
     @Operation(summary = "get list of user history")
@@ -38,7 +38,7 @@ public class UserController {
         if (user.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-        List<UserSessionHistory> histories = userSessionHistoryQueryService.findAllByUsername(user.get().getUsername());
+        List<UserSessionHistory> histories = userSessionHistoryService.findAllByUsername(user.get().getUsername());
         if (CollectionUtils.isEmpty(histories)) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

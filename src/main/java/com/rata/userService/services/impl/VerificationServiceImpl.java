@@ -1,4 +1,4 @@
-package com.rata.userService.services.impl.command;
+package com.rata.userService.services.impl;
 
 import com.rata.userService.config.Utils;
 import com.rata.userService.dto.MessageDTO;
@@ -8,23 +8,24 @@ import com.rata.userService.enums.MessageType;
 import com.rata.userService.models.User;
 import com.rata.userService.models.Verification;
 import com.rata.userService.repositories.mysql.VerificationRepository;
+import com.rata.userService.services.interfaces.MessageService;
 import com.rata.userService.services.interfaces.UserService;
-import com.rata.userService.services.interfaces.command.MessageCommandService;
-import com.rata.userService.services.interfaces.command.VerificationCommandService;
+import com.rata.userService.services.interfaces.VerificationService;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class VerificationCommandServiceImpl implements VerificationCommandService {
+public class VerificationServiceImpl implements VerificationService {
 
     private final VerificationRepository verificationRepository;
     private final UserService userService;
-    private final MessageCommandService messageCommandService;
-
+    private final MessageService messageService;
     @Override
     public String save(VerificationDTO dto) {
         Optional<User> user = userService.find(dto.getUserId());
@@ -39,13 +40,13 @@ public class VerificationCommandServiceImpl implements VerificationCommandServic
             verification.setIdentifyCode(UUID.randomUUID().toString().replace("-", ""));
             verification = verificationRepository.save(verification);
             if (dto.getType().equals("payment")) {
-                messageCommandService.sendSms(createPaymentVerificationSms(verification.getMobile(), verification.getCode(), dto.getAmount(), verification.getData()));
+                messageService.sendSms(createPaymentVerificationSms(verification.getMobile(), verification.getCode(), dto.getAmount(), verification.getData()));
             }
             if (dto.getType().equals("driver_performance")) {
-                messageCommandService.sendSms(createDriverPerformanceVerificationSms(verification.getMobile(), verification.getCode(), verification.getData()));
+                messageService.sendSms(createDriverPerformanceVerificationSms(verification.getMobile(), verification.getCode(), verification.getData()));
             }
             if (dto.getType().equals("settle_issuer_co")) {
-                messageCommandService.sendSms(createSettleIssuerCoVerificationSms(verification.getMobile(), verification.getCode(), verification.getData()));
+                messageService.sendSms(createSettleIssuerCoVerificationSms(verification.getMobile(), verification.getCode(), verification.getData()));
             }
             return verification.getIdentifyCode();
         }
@@ -63,7 +64,7 @@ public class VerificationCommandServiceImpl implements VerificationCommandServic
         verification.setCode(Utils.generateRandomCode());
         verification.setIdentifyCode(UUID.randomUUID().toString().replace("-", ""));
         verification = verificationRepository.save(verification);
-        messageCommandService.sendSms(createLoginVerificationSms(verification.getMobile(), verification.getCode()));
+        messageService.sendSms(createLoginVerificationSms(verification.getMobile(), verification.getCode()));
         return verification.getIdentifyCode();
     }
 
@@ -119,5 +120,23 @@ public class VerificationCommandServiceImpl implements VerificationCommandServic
         data.put("code", code);
         message.setData(data);
         return message;
+    }
+    
+    @Override
+    public boolean checkVerificationCode(String identifierCode, String smsCode, String data) {
+        Calendar calendarEnd = Calendar.getInstance();
+        Calendar calendarStart = Calendar.getInstance();
+        calendarStart.set(Calendar.MINUTE, calendarEnd.get(Calendar.MINUTE) - 2);
+        Verification verification = verificationRepository.findByIdentifyCodeAndCodeAndDataAndSendDateBetween(identifierCode, smsCode, data, calendarStart.getTime(), calendarEnd.getTime());
+        return verification != null;
+    }
+
+    @Override
+    public String checkValidityResendSms(String data) {
+        Calendar calendarEnd = Calendar.getInstance();
+        Calendar calendarStart = Calendar.getInstance();
+        calendarStart.set(Calendar.MINUTE, calendarEnd.get(Calendar.MINUTE) - 2);
+        Verification verification = verificationRepository.findFirstByDataAndSendDateBetweenOrderBySendDateDesc(data, calendarStart.getTime(), calendarEnd.getTime());
+        return verification != null ? verification.getIdentifyCode() : null;
     }
 }

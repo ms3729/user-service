@@ -1,9 +1,9 @@
-package com.rata.userService.services.interfaces.query;
+package com.rata.userService.services.interfaces;
 
 import com.rata.userService.records.superData.BankRecord;
 import com.rata.userService.records.superData.ZoneRecord;
 
-public interface SuperDataQueryService {
+public interface SuperDataService {
 
     BankRecord findBankById(int id);
 
