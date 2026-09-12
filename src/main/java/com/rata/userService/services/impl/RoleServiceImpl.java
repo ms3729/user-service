@@ -10,8 +10,8 @@ import com.rata.userService.records.RoleResponse;
 import com.rata.userService.records.UpdateRoleRequest;
 import com.rata.userService.records.newRecords.RoleSearchCriteria;
 import com.rata.userService.repositories.mongodb.RoleGridRepository;
-import com.rata.userService.repositories.mysql.ApplicationRepository;
 import com.rata.userService.repositories.mysql.RoleRepository;
+import com.rata.userService.services.interfaces.ApplicationService;
 import com.rata.userService.services.interfaces.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
-    private final ApplicationRepository applicationRepository;
+    private final ApplicationService applicationService;
     private final RoleGridRepository roleGridRepository;
 
     @Override
@@ -37,7 +37,7 @@ public class RoleServiceImpl implements RoleService {
         role.setSystemRole(request.systemRole());
 
         if (request.appId() != null) {
-            Application app = applicationRepository.findById(request.appId())
+            Application app = applicationService.findById(request.appId())
                     .orElseThrow(() -> new ResourceNotFoundException("برنامه با شناسه " + request.appId() + " یافت نشد"));
             role.setApp(app);
         }
@@ -59,7 +59,7 @@ public class RoleServiceImpl implements RoleService {
         role.setSystemRole(request.systemRole());
 
         if (request.appId() != null) {
-            Application app = applicationRepository.findById(request.appId())
+            Application app = applicationService.findById(request.appId())
                     .orElseThrow(() -> new ResourceNotFoundException("برنامه با شناسه " + request.appId() + " یافت نشد"));
             role.setApp(app);
         } else {

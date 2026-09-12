@@ -4,12 +4,13 @@
 *.o
 *.obj
 *.out
+build/
+target/
 
 # Dependencies
-target/
-.mypy_cache/
-.pytest_cache/
 .gradle/
+lib/
+vendor/
 
 # Logs and temp files
 *.log
@@ -24,6 +25,8 @@ target/
 # Editors
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # Coverage reports
 coverage/
