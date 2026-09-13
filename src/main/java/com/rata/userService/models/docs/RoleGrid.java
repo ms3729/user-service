@@ -55,4 +55,7 @@ public class RoleGrid {
     @Indexed
     private boolean systemRole;
 
+    @Indexed
+    private long totalCount;
+
 }
