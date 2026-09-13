@@ -2,6 +2,8 @@ package com.rata.userService.records;
 
 import jakarta.validation.constraints.NotBlank;
 
+import java.util.List;
+
 public record UpdateRoleRequest(
         @NotBlank(message = "نام نقش الزامی است")
         String name,
@@ -13,6 +15,8 @@ public record UpdateRoleRequest(
 
         boolean systemRole,
 
-        Long appId
+        Long appId,
+        
+        List<Long> permissionsId
 ) {
 }

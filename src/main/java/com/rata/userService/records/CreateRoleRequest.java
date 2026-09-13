@@ -3,6 +3,8 @@ package com.rata.userService.records;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
+
 public record CreateRoleRequest(
         @NotBlank(message = "نام نقش الزامی است")
         String name,
@@ -14,6 +16,8 @@ public record CreateRoleRequest(
 
         boolean systemRole,
 
-        Long appId
+        Long appId,
+        
+        List<Long> permissionsId
 ) {
 }

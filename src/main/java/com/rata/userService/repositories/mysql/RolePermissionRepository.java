@@ -12,5 +12,8 @@ import java.util.stream.Stream;
 
 @Repository
 public interface RolePermissionRepository extends JpaRepository<RolePermission, Long> {
-
+    
+    void deleteByRoleId(Long roleId);
+    
+    List<RolePermission> findByRoleId(Long roleId);
 }
