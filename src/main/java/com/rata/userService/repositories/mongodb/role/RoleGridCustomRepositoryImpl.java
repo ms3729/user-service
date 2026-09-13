@@ -1,4 +1,4 @@
-package com.rata.userService.repositories.mongodb;
+package com.rata.userService.repositories.mongodb.role;
 
 import com.rata.userService.models.docs.RoleGrid;
 import com.rata.userService.records.newRecords.RoleSearchCriteria;

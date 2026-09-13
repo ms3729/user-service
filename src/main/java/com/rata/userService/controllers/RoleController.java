@@ -1,6 +1,8 @@
 package com.rata.userService.controllers;
 
+import com.rata.userService.records.CreateRoleRequest;
 import com.rata.userService.records.ResponseResult;
+import com.rata.userService.records.UpdateRoleRequest;
 import com.rata.userService.records.newRecords.RoleSearchCriteria;
 import com.rata.userService.services.interfaces.RoleService;
 import io.swagger.v3.oas.annotations.Operation;

@@ -9,7 +9,7 @@ import com.rata.userService.models.party.Party;
 import com.rata.userService.models.party.PartyContact;
 import com.rata.userService.models.party.PersonTranslation;
 import com.rata.userService.records.newRecords.EmployeeEvent;
-import com.rata.userService.repositories.mongodb.EmployeeGridRepository;
+import com.rata.userService.repositories.mongodb.employee.EmployeeGridRepository;
 import com.rata.userService.repositories.mysql.MembershipRepository;
 import com.rata.userService.repositories.mysql.PartyContactRepository;
 import com.rata.userService.repositories.mysql.PartyRepository;

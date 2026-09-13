@@ -9,7 +9,7 @@ import com.rata.userService.records.CreateRoleRequest;
 import com.rata.userService.records.RoleResponse;
 import com.rata.userService.records.UpdateRoleRequest;
 import com.rata.userService.records.newRecords.RoleSearchCriteria;
-import com.rata.userService.repositories.mongodb.RoleGridRepository;
+import com.rata.userService.repositories.mongodb.role.RoleGridRepository;
 import com.rata.userService.repositories.mysql.RoleRepository;
 import com.rata.userService.services.interfaces.ApplicationService;
 import com.rata.userService.services.interfaces.RolePermissionService;
@@ -35,7 +35,7 @@ public class RoleServiceImpl implements RoleService {
     public RoleResponse createRole(CreateRoleRequest request) {
         Long currentOrgId = getCurrentOrganizationId();
         Long currentAppId = request.appId();
-        
+
         Role role = new Role();
         role.setName(request.name());
         role.setDescription(request.description());
@@ -49,15 +49,15 @@ public class RoleServiceImpl implements RoleService {
         }
 
         Role savedRole = roleRepository.save(role);
-        
+
         // Save role permissions
         if (request.permissionsId() != null && !request.permissionsId().isEmpty()) {
-            rolePermissionService.saveRolePermissions(savedRole.getId(), request.permissionsId());
+            rolePermissionService.saveRolePermissions(savedRole, request.permissionsId());
         }
-        
+
         // Sync to MongoDB
-        syncRoleToGrid(savedRole, 0L);
-        
+        syncRoleToGrid(savedRole, 0);
+
         return toResponse(savedRole);
     }
 
@@ -78,15 +78,15 @@ public class RoleServiceImpl implements RoleService {
         }
 
         Role updatedRole = roleRepository.save(role);
-        
+
         // Update role permissions
         if (request.permissionsId() != null) {
-            rolePermissionService.saveRolePermissions(updatedRole.getId(), request.permissionsId());
+            rolePermissionService.saveRolePermissions(updatedRole, request.permissionsId());
         }
-        
+
         // Sync to MongoDB - user count will be updated separately
-        syncRoleToGrid(updatedRole, 0L);
-        
+        syncRoleToGrid(updatedRole, 0);
+
         return toResponse(updatedRole);
     }
 
@@ -95,13 +95,13 @@ public class RoleServiceImpl implements RoleService {
     public PageResponse<RoleGrid> getRoles(RoleSearchCriteria criteria, Pageable pageable) {
         // Get current organization and application from security context
         Long currentOrgId = getCurrentOrganizationId();
-        Long currentAppId = getCurrentApplicationId();
-        
+        Integer currentAppId = getCurrentApplicationId();
+
         // Override criteria with current context if not provided
         if (criteria.appId() == null && currentAppId != null) {
             criteria = new RoleSearchCriteria(currentAppId, criteria.search(), criteria.systemRole(), criteria.status());
         }
-        
+
         Page<RoleGrid> page = roleGridRepository.searchRoles(criteria, pageable);
         return toPageResponse(page);
     }
@@ -116,16 +116,16 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public void deleteRole(Long id) {
         Role role = getRoleById(id);
-        
+
         if (role.isSystemRole()) {
             throw new RuntimeException("نقش سیستمی قابل حذف نیست");
         }
-        
+
         // Delete role permissions first
         rolePermissionService.deleteRolePermissions(role.getId());
-        
+
         roleRepository.delete(role);
-        
+
         // Delete from MongoDB
         roleGridRepository.deleteByRoleId(role.getId());
     }
@@ -157,8 +157,8 @@ public class RoleServiceImpl implements RoleService {
         response.setTotalSize(page.getTotalElements());
         return response;
     }
-    
-    private void syncRoleToGrid(Role role, long userCount) {
+
+    private void syncRoleToGrid(Role role, int userCount) {
         RoleGrid grid = RoleGrid.builder()
                 .roleId(role.getId())
                 .appId(role.getApp() != null ? role.getApp().getId() : null)
@@ -169,13 +169,13 @@ public class RoleServiceImpl implements RoleService {
                 .status(role.isEnabled())
                 .totalCount(userCount)
                 .build();
-        
+
         roleGridRepository.findByRoleId(role.getId())
                 .ifPresent(existing -> grid.setId(existing.getId()));
-        
+
         roleGridRepository.save(grid);
     }
-    
+
     private Long getCurrentOrganizationId() {
         try {
             var authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -188,8 +188,8 @@ public class RoleServiceImpl implements RoleService {
         }
         return null;
     }
-    
-    private Long getCurrentApplicationId() {
+
+    private Integer getCurrentApplicationId() {
         // Implementation depends on how application ID is stored in security context
         // This can be extended based on your security implementation
         return null;

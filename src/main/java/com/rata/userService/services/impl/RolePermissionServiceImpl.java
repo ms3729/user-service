@@ -6,7 +6,6 @@ import com.rata.userService.models.Role;
 import com.rata.userService.models.RolePermission;
 import com.rata.userService.repositories.mysql.PermissionRepository;
 import com.rata.userService.repositories.mysql.RolePermissionRepository;
-import com.rata.userService.repositories.mysql.RoleRepository;
 import com.rata.userService.services.interfaces.RolePermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,31 +20,27 @@ import java.util.List;
 public class RolePermissionServiceImpl implements RolePermissionService {
 
     private final RolePermissionRepository rolePermissionRepository;
-    private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
 
     @Override
-    public List<RolePermission> saveRolePermissions(Long roleId, List<Long> permissionIds) {
+    public List<RolePermission> saveRolePermissions(Role role, List<Long> permissionIds) {
         // Delete existing permissions for this role
-        deleteRolePermissions(roleId);
-        
+        deleteRolePermissions(role.getId());
+
         if (permissionIds == null || permissionIds.isEmpty()) {
             return new ArrayList<>();
         }
-        
-        Role role = roleRepository.findById(roleId)
-                .orElseThrow(() -> new ResourceNotFoundException("نقش با شناسه " + roleId + " یافت نشد"));
-        
+
         List<RolePermission> savedPermissions = new ArrayList<>();
-        
+
         for (Long permissionId : permissionIds) {
             Permission permission = permissionRepository.findById(permissionId)
                     .orElseThrow(() -> new ResourceNotFoundException("دسترسی با شناسه " + permissionId + " یافت نشد"));
-            
+
             RolePermission rolePermission = new RolePermission(role, permission);
             savedPermissions.add(rolePermissionRepository.save(rolePermission));
         }
-        
+
         return savedPermissions;
     }
 

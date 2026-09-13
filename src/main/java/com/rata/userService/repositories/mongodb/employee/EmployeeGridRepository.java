@@ -1,4 +1,4 @@
-package com.rata.userService.repositories.mongodb;
+package com.rata.userService.repositories.mongodb.employee;
 
 import com.rata.userService.models.docs.EmployeeGrid;
 import org.springframework.data.mongodb.repository.MongoRepository;
