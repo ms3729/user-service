@@ -11,57 +11,51 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDate;
-import java.util.Map;
 import java.util.UUID;
 
 /**
  * Document سبک فقط برای نمایش در Grid
  * اطلاعات کامل از PostgreSQL خوانده می‌شود
  */
-@Document(collection = "employee_grid")
+@Document(collection = "role_grid")
 @CompoundIndexes({
         // Index برای فیلتر شرکت + وضعیت + مرتب‌سازی
-        @CompoundIndex(name = "idx_organization", def = "{'organizationId': 1}"),
+        @CompoundIndex(name = "idx_app", def = "{'appId': 1}"),
         // Index برای فیلتر شرکت + مرتب‌سازی نام
-        @CompoundIndex(name = "idx_organization_displayName", def = "{'organizationId': 1, 'displayName': 1}"),
-        // Index برای فیلتر شرکت + مرتب‌سازی تاریخ عضویت
-        @CompoundIndex(name = "idx_organization_membershipStart", def = "{'organizationId': 1, 'membershipStartDate': -1}")
+        @CompoundIndex(name = "idx_app_name", def = "{'appId': 1, 'name': 1}")
 })
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class EmployeeGrid {
+public class RoleGrid {
 
     @Id
     @Builder.Default
     private String id = UUID.randomUUID().toString();
 
     @Indexed
-    private long partyId;
+    private long roleId;
 
     @Indexed
-    private long organizationId;
+    private Integer appId;
 
     @Indexed
     private boolean status;
 
     @TextIndexed
-    private String displayName;
+    private String name;
 
-    // نام‌ها به زبان‌های مختلف برای جستجوی چندزبانه
-    private Map<String, String> displayNames;
+    @TextIndexed
+    private String code;
 
-    // فیلدهای denormalized برای نمایش سریع
-    private String nationalCode;
-    private String mobile;
-    private String email;
+    @TextIndexed
+    private String description;
 
-    // تاریخ عضویت در شرکت
-    private LocalDate membershipStartDate;
+    @Indexed
+    private boolean systemRole;
 
-    // واحد سازمانی کارمند
-    private String unitName;
+    @Indexed
+    private long totalCount;
 
 }

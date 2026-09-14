@@ -20,6 +20,7 @@ public class Membership extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @ManyToOne
+    @JoinColumn(name = "organization_id")
     private Organization organization;
     @ManyToOne
     private Party party;

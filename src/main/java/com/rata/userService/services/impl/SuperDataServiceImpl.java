@@ -28,7 +28,7 @@ public class SuperDataServiceImpl implements SuperDataService {
         String result = null;
         try {
             result = (String) amqpTemplate.convertSendAndReceive("rpc-super-data-direct-exchange", "rpc.super.data.bank.code.request", code);
-        } catch (Exception _) {
+        } catch (Exception ex) {
         }
         return result != null ? bankBuilder(result) : null;
     }
@@ -39,7 +39,7 @@ public class SuperDataServiceImpl implements SuperDataService {
         try {
             ZoneFilter filter = new ZoneFilter(id, "fa");
             record = (String) amqpTemplate.convertSendAndReceive("rpc-super-data-direct-exchange", "rpc.super.data.city.id.request", objectMapper.writeValueAsString(filter));
-        } catch (Exception _) {
+        } catch (Exception ex) {
 
         }
         return record != null ? zoneBuilder(record) : null;
@@ -51,7 +51,7 @@ public class SuperDataServiceImpl implements SuperDataService {
         try {
             ZoneFilter filter = new ZoneFilter(id, "fa");
             record = (String) amqpTemplate.convertSendAndReceive("rpc-super-data-direct-exchange", "rpc.super.data.state.id.request", objectMapper.writeValueAsString(filter));
-        } catch (Exception _) {
+        } catch (Exception ex) {
         }
         return record != null ? zoneBuilder(record) : null;
     }
@@ -62,7 +62,7 @@ public class SuperDataServiceImpl implements SuperDataService {
         try {
             ZoneFilter filter = new ZoneFilter(id, "fa");
             record = (String) amqpTemplate.convertSendAndReceive("rpc-super-data-direct-exchange", "rpc.super.data.country.id.request", objectMapper.writeValueAsString(filter));
-        } catch (Exception _) {
+        } catch (Exception ex) {
         }
         return record != null ? zoneBuilder(record) : null;
     }
@@ -71,7 +71,7 @@ public class SuperDataServiceImpl implements SuperDataService {
         BankRecord record = null;
         try {
             record = objectMapper.readValue(responseData, BankRecord.class);
-        } catch (JsonProcessingException _) {
+        } catch (JsonProcessingException ex) {
         }
         return record;
     }
@@ -80,7 +80,7 @@ public class SuperDataServiceImpl implements SuperDataService {
         ZoneRecord record = null;
         try {
             record = objectMapper.readValue(responseData, ZoneRecord.class);
-        } catch (JsonProcessingException _) {
+        } catch (JsonProcessingException ex) {
         }
         return record;
     }

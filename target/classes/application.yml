@@ -1,0 +1,82 @@
+server:
+  port: 1315
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain, application/json
+  servlet:
+    context-path: /flm-user
+
+spring:
+  session:
+    redis:
+      namespace: "spring:session:user-service"
+  application:
+    name: USER-SERVICE
+  profiles:
+    active: development
+  messages:
+    basename: message
+    encoding: UTF-8
+    fallback-to-system-locale: false
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: Asia/Tehran
+          batch_size: 50
+        order_updates: true
+  data:
+    redis:
+      database: 0
+      host: 192.168.88.245
+      port: 6379
+      password: Rata@2024
+      ttl: 36000
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          max-wait: -1
+          min-idle: 0
+    mongodb:
+      authentication-database: test_user
+      username: root
+      password: root
+      database: test_user
+      uri: mongodb://192.168.88.245:27017
+    jpa:
+      repositories:
+        enabled: true
+  datasource:
+    url: jdbc:mysql://192.168.88.245:3306/test_user?enabledTLSProtocols=TLSv1.2
+    username: root
+    password: root
+    hikari:
+      connection-timeout: 20000
+      maximum-pool-size: 5
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  main:
+    allow-circular-references: true
+  rabbitmq:
+    host: 192.168.88.245
+    port: 5672
+    username: root
+    password: R@ta#2024
+    listener:
+      simple:
+        prefetch: 50
+        concurrency: 5
+        max-concurrency: 10
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://192.168.88.245:1301/eureka/
+  instance:
+    hostname: 192.168.88.245

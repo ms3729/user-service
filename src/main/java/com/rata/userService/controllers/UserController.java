@@ -3,8 +3,12 @@ package com.rata.userService.controllers;
 import com.rata.userService.config.authentication.JwtService;
 import com.rata.userService.models.User;
 import com.rata.userService.models.docs.UserSessionHistory;
+import com.rata.userService.records.ApplicationRecord;
 import com.rata.userService.records.ResponseResult;
+import com.rata.userService.records.UserPermissionsMenusResponse;
+import com.rata.userService.records.UserProfileResponse;
 import com.rata.userService.services.interfaces.UserService;
+import com.rata.userService.services.interfaces.ApplicationService;
 import com.rata.userService.services.interfaces.UserSessionHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +32,7 @@ public class UserController {
     private final UserService userService;
     private final JwtService jwtService;
     private final UserSessionHistoryService userSessionHistoryService;
+    private final ApplicationService applicationService;
 
 
     @Operation(summary = "get list of user history")
@@ -62,6 +67,45 @@ public class UserController {
     public ResponseEntity<?> changePassword(@PathVariable long id, @RequestParam String password) {
         userService.changePassword(id, password);
         return ResponseEntity.ok(new ResponseResult("", ""));
+    }
+
+    @Operation(summary = "get user profile with roles, permissions, identifiers and contacts")
+    @GetMapping("/profile")
+    public ResponseEntity<?> getUserProfile() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = jwtService.extractUsername((String) authentication.getPrincipal());
+        UserProfileResponse profile = userService.getUserProfile(username);
+        if (profile == null) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        return new ResponseEntity<>(new ResponseResult("", profile), HttpStatus.OK);
+    }
+
+    @Operation(summary = "get list of user applications")
+    @GetMapping("/applications")
+    public ResponseEntity<?> getUserApplications() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Optional<User> user = userService.findByUserName(jwtService.extractUsername((String) authentication.getPrincipal()));
+        if (user.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        List<ApplicationRecord> applications = applicationService.findApplicationsByUserId(user.get().getId());
+        if (CollectionUtils.isEmpty(applications)) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(new ResponseResult("", applications), HttpStatus.OK);
+    }
+
+    @Operation(summary = "get user permissions and menus")
+    @GetMapping("/permissions-menus")
+    public ResponseEntity<?> getUserPermissionsAndMenus() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = jwtService.extractUsername((String) authentication.getPrincipal());
+        UserPermissionsMenusResponse response = userService.getUserPermissionsAndMenus(username);
+        if (response == null) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        return new ResponseEntity<>(new ResponseResult("", response), HttpStatus.OK);
     }
 
 }

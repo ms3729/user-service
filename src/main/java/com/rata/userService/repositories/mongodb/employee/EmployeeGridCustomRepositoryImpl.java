@@ -1,4 +1,4 @@
-package com.rata.userService.repositories.mongodb;
+package com.rata.userService.repositories.mongodb.employee;
 
 import com.rata.userService.models.docs.EmployeeGrid;
 import com.rata.userService.records.newRecords.EmployeeSearchCriteria;
