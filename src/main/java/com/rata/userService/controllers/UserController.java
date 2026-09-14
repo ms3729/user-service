@@ -3,9 +3,11 @@ package com.rata.userService.controllers;
 import com.rata.userService.config.authentication.JwtService;
 import com.rata.userService.models.User;
 import com.rata.userService.models.docs.UserSessionHistory;
+import com.rata.userService.records.ApplicationRecord;
 import com.rata.userService.records.ResponseResult;
 import com.rata.userService.records.UserProfileResponse;
 import com.rata.userService.services.interfaces.UserService;
+import com.rata.userService.services.interfaces.ApplicationService;
 import com.rata.userService.services.interfaces.UserSessionHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,6 +31,7 @@ public class UserController {
     private final UserService userService;
     private final JwtService jwtService;
     private final UserSessionHistoryService userSessionHistoryService;
+    private final ApplicationService applicationService;
 
 
     @Operation(summary = "get list of user history")
@@ -75,6 +78,21 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(new ResponseResult("", profile), HttpStatus.OK);
+    }
+
+    @Operation(summary = "get list of user applications")
+    @GetMapping("/applications")
+    public ResponseEntity<?> getUserApplications() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Optional<User> user = userService.findByUserName(jwtService.extractUsername((String) authentication.getPrincipal()));
+        if (user.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        List<ApplicationRecord> applications = applicationService.findApplicationsByUserId(user.get().getId());
+        if (CollectionUtils.isEmpty(applications)) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(new ResponseResult("", applications), HttpStatus.OK);
     }
 
 }

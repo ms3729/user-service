@@ -9,6 +9,7 @@
 /workspace/src/main/java/com/rata/userService/services/interfaces/OrganizationService.java
 /workspace/src/main/java/com/rata/userService/models/BaseEntity.java
 /workspace/src/main/java/com/rata/userService/repositories/mysql/VerificationRepository.java
+/workspace/src/main/java/com/rata/userService/repositories/mysql/UserApplicationRepository.java
 /workspace/src/main/java/com/rata/userService/models/Application.java
 /workspace/src/main/java/com/rata/userService/models/UserUnit.java
 /workspace/src/main/java/com/rata/userService/records/newRecords/UpdateEmployeeRequest.java

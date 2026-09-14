@@ -96,6 +96,7 @@ com/rata/userService/enums/EducationLevel.class
 com/rata/userService/config/AuditorAwareImpl.class
 com/rata/userService/repositories/mysql/VerificationRepository.class
 com/rata/userService/services/interfaces/PersonTranslationService.class
+com/rata/userService/repositories/mysql/UserApplicationRepository.class
 com/rata/userService/enums/IdentifierType.class
 com/rata/userService/records/UserStatRecord.class
 com/rata/userService/repositories/mongodb/role/RoleGridCustomRepository.class

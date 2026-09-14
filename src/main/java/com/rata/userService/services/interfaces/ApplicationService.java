@@ -11,4 +11,6 @@ public interface ApplicationService {
     List<ApplicationRecord> findByUserId(long userId);
     
     Optional<Application> findById(Long id);
+    
+    List<ApplicationRecord> findApplicationsByUserId(long userId);
 }
