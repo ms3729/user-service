@@ -11,13 +11,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-public class UserRole extends BaseEntity {
+public class UserRole {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @ManyToOne
     private User user;
     @ManyToOne
+    @JoinColumn(name = "organization_id")
     private Organization organization;
     @ManyToOne
     private Role role;
