@@ -18,6 +18,7 @@ public class UserApplication extends BaseEntity {
     @ManyToOne
     private User user;
     @ManyToOne
+    @JoinColumn(name = "organization_id")
     private Organization organization;
     @ManyToOne
     private Application application;
