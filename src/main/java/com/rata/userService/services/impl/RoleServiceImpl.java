@@ -9,7 +9,7 @@ import com.rata.userService.records.CreateRoleRequest;
 import com.rata.userService.records.RoleResponse;
 import com.rata.userService.records.UpdateRoleRequest;
 import com.rata.userService.records.newRecords.RoleSearchCriteria;
-import com.rata.userService.repositories.mongodb.RoleGridRepository;
+import com.rata.userService.repositories.mongodb.role.RoleGridRepository;
 import com.rata.userService.repositories.mysql.RoleRepository;
 import com.rata.userService.services.interfaces.ApplicationService;
 import com.rata.userService.services.interfaces.RolePermissionService;
@@ -116,7 +116,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public void deleteRole(Long id) {
         Role role = getRoleById(id);
-        
+
         if (role.isSystemRole()) {
             throw new RuntimeException("نقش سیستمی قابل حذف نیست");
         }
@@ -125,7 +125,7 @@ public class RoleServiceImpl implements RoleService {
         rolePermissionService.deleteRolePermissions(role.getId());
         
         roleRepository.delete(role);
-        
+
         // Delete from MongoDB
         roleGridRepository.deleteByRoleId(role.getId());
     }
@@ -169,10 +169,10 @@ public class RoleServiceImpl implements RoleService {
                 .status(role.isEnabled())
                 .totalCount(userCount)
                 .build();
-        
+
         roleGridRepository.findByRoleId(role.getId())
                 .ifPresent(existing -> grid.setId(existing.getId()));
-        
+
         roleGridRepository.save(grid);
     }
     

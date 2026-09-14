@@ -8,7 +8,7 @@ import com.rata.userService.models.User;
 import com.rata.userService.models.docs.EmployeeGrid;
 import com.rata.userService.models.party.Party;
 import com.rata.userService.records.newRecords.*;
-import com.rata.userService.repositories.mongodb.EmployeeGridRepository;
+import com.rata.userService.repositories.mongodb.employee.EmployeeGridRepository;
 import com.rata.userService.repositories.mysql.PartyRepository;
 import com.rata.userService.services.interfaces.*;
 import lombok.AllArgsConstructor;

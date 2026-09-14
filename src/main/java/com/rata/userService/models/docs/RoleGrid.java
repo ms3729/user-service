@@ -38,7 +38,7 @@ public class RoleGrid {
     private long roleId;
 
     @Indexed
-    private Long appId;
+    private Integer appId;
 
     @Indexed
     private boolean status;

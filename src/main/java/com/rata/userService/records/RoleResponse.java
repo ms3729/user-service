@@ -7,7 +7,7 @@ public record RoleResponse(
         String code,
         boolean systemRole,
         boolean enabled,
-        Long appId,
+        long appId,
         String appName
 ) {
 }
