@@ -17,4 +17,10 @@ public interface PermissionRepository  extends JpaRepository<Permission, Long> {
 
     @Query("select p from Permission p where p.enabled=true and p.parent is null")
     List<Permission> findAll(boolean enabled);
+
+    @Query("SELECT DISTINCT p FROM Permission p " +
+           "JOIN RolePermission rp ON rp.permission = p " +
+           "JOIN UserRole ur ON ur.role = rp.role " +
+           "WHERE ur.user.id = :userId")
+    List<Permission> findByUserId(Long userId);
 }

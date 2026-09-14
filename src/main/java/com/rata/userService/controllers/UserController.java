@@ -5,6 +5,7 @@ import com.rata.userService.models.User;
 import com.rata.userService.models.docs.UserSessionHistory;
 import com.rata.userService.records.ApplicationRecord;
 import com.rata.userService.records.ResponseResult;
+import com.rata.userService.records.UserPermissionsMenusResponse;
 import com.rata.userService.records.UserProfileResponse;
 import com.rata.userService.services.interfaces.UserService;
 import com.rata.userService.services.interfaces.ApplicationService;
@@ -93,6 +94,18 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(new ResponseResult("", applications), HttpStatus.OK);
+    }
+
+    @Operation(summary = "get user permissions and menus")
+    @GetMapping("/permissions-menus")
+    public ResponseEntity<?> getUserPermissionsAndMenus() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = jwtService.extractUsername((String) authentication.getPrincipal());
+        UserPermissionsMenusResponse response = userService.getUserPermissionsAndMenus(username);
+        if (response == null) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        return new ResponseEntity<>(new ResponseResult("", response), HttpStatus.OK);
     }
 
 }
