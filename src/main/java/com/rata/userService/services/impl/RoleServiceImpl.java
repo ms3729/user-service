@@ -99,7 +99,7 @@ public class RoleServiceImpl implements RoleService {
         
         // Override criteria with current context if not provided
         if (criteria.appId() == null && currentAppId != null) {
-            criteria = new RoleSearchCriteria(currentAppId, criteria.search(), criteria.systemRole(), criteria.status());
+            criteria = new RoleSearchCriteria(currentAppId.intValue(), criteria.search(), criteria.systemRole(), criteria.status());
         }
         
         Page<RoleGrid> page = roleGridRepository.searchRoles(criteria, pageable);
