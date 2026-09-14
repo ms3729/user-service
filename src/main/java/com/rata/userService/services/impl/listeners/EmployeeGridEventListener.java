@@ -14,6 +14,7 @@ import com.rata.userService.repositories.mysql.MembershipRepository;
 import com.rata.userService.repositories.mysql.PartyContactRepository;
 import com.rata.userService.repositories.mysql.PartyRepository;
 import com.rata.userService.repositories.mysql.PersonTranslationRepository;
+import com.rata.userService.repositories.mysql.UserUnitRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -32,6 +33,7 @@ public class EmployeeGridEventListener {
     private final PartyContactRepository partyContactRepository;
     private final MembershipRepository membershipRepository;
     private final EmployeeGridRepository employeeGridMongoRepository;
+    private final UserUnitRepository userUnitRepository;
 
 
     @Async
@@ -113,6 +115,12 @@ public class EmployeeGridEventListener {
                         party.getId(), organizationId, RelationType.EMPLOYEE)
                 .orElse(null);
 
+        // پیدا کردن UnitName برای این کارمند در این سازمان
+        String unitName = userUnitRepository
+                .findByPartyIdAndOrganizationId(party.getId(), organizationId)
+                .map(uu -> uu.getUnit().getTitle())
+                .orElse(null);
+
         return EmployeeGrid.builder()
                 .id(party.getId() + ":" + organizationId)
                 .partyId(party.getId())
@@ -126,6 +134,7 @@ public class EmployeeGridEventListener {
                 .membershipStartDate(membership != null && membership.getStartDate() != null
                         ? membership.getStartDate()
                         : null)
+                .unitName(unitName)
                 .build();
     }
 

@@ -61,4 +61,7 @@ public class EmployeeGrid {
     // تاریخ عضویت در شرکت
     private LocalDate membershipStartDate;
 
+    // واحد سازمانی کارمند
+    private String unitName;
+
 }

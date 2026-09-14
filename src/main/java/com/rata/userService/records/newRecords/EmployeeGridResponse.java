@@ -14,6 +14,7 @@ public record EmployeeGridResponse(
         String mobile,
         String email,
         String status,
-        LocalDate membershipStartDate
+        LocalDate membershipStartDate,
+        String unit
 ) {
 }
