@@ -95,7 +95,7 @@ public class RoleServiceImpl implements RoleService {
     public PageResponse<RoleGrid> getRoles(RoleSearchCriteria criteria, Pageable pageable) {
         // Get current organization and application from security context
         Long currentOrgId = getCurrentOrganizationId();
-        Long currentAppId = getCurrentApplicationId();
+        Integer currentAppId = getCurrentApplicationId();
         
         // Override criteria with current context if not provided
         if (criteria.appId() == null && currentAppId != null) {
@@ -189,7 +189,7 @@ public class RoleServiceImpl implements RoleService {
         return null;
     }
     
-    private Long getCurrentApplicationId() {
+    private Integer getCurrentApplicationId() {
         // Implementation depends on how application ID is stored in security context
         // This can be extended based on your security implementation
         return null;
