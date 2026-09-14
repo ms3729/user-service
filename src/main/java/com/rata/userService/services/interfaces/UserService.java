@@ -2,6 +2,7 @@ package com.rata.userService.services.interfaces;
 
 import com.rata.userService.models.User;
 import com.rata.userService.models.party.Party;
+import com.rata.userService.records.UserProfileResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -24,4 +25,6 @@ public interface UserService {
     Optional<User> find(long id);
 
     boolean userExistsForParty(long partyId);
+
+    UserProfileResponse getUserProfile(String username);
 }

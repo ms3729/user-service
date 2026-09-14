@@ -4,6 +4,7 @@ import com.rata.userService.config.authentication.JwtService;
 import com.rata.userService.models.User;
 import com.rata.userService.models.docs.UserSessionHistory;
 import com.rata.userService.records.ResponseResult;
+import com.rata.userService.records.UserProfileResponse;
 import com.rata.userService.services.interfaces.UserService;
 import com.rata.userService.services.interfaces.UserSessionHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,6 +63,18 @@ public class UserController {
     public ResponseEntity<?> changePassword(@PathVariable long id, @RequestParam String password) {
         userService.changePassword(id, password);
         return ResponseEntity.ok(new ResponseResult("", ""));
+    }
+
+    @Operation(summary = "get user profile with roles, permissions, identifiers and contacts")
+    @GetMapping("/profile")
+    public ResponseEntity<?> getUserProfile() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = jwtService.extractUsername((String) authentication.getPrincipal());
+        UserProfileResponse profile = userService.getUserProfile(username);
+        if (profile == null) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        return new ResponseEntity<>(new ResponseResult("", profile), HttpStatus.OK);
     }
 
 }
