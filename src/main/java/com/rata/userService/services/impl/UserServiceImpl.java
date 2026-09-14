@@ -6,8 +6,6 @@ import com.rata.userService.dto.MessageDTO;
 import com.rata.userService.enums.MessageLevel;
 import com.rata.userService.enums.MessageType;
 import com.rata.userService.errorHandling.DuplicateResourceException;
-import com.rata.userService.models.Application;
-import com.rata.userService.models.Permission;
 import com.rata.userService.models.Role;
 import com.rata.userService.models.User;
 import com.rata.userService.models.party.Party;
@@ -21,11 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -163,48 +157,12 @@ public class UserServiceImpl implements UserService {
                         Role role = ur.getRole();
                         return new UserProfileResponse.RoleInfo(
                                 role != null ? role.getId() : null,
-                                role != null ? role.getName() : null,
-                                role != null ? role.getCode() : null,
-                                ur.getOrganization() != null ? ur.getOrganization().getPartyId() : null,
-                                ur.getOrganization() != null && ur.getOrganization().getParty() != null
-                                        ? ur.getOrganization().getParty().getDisplayName()
-                                        : null
+                                role != null ? role.getName() : null
                         );
                     })
                     .collect(Collectors.toList());
         }
 
-        // Build permissions list from UserApplication -> Application and organizationId
-        List<UserProfileResponse.PermissionInfo> permissions = new ArrayList<>();
-        if (user.getApplications() != null) {
-            permissions = user.getApplications().stream()
-                    .flatMap(ua -> {
-                        List<UserProfileResponse.PermissionInfo> permList = new ArrayList<>();
-                        Application app = ua.getApplication();
-                        Long orgId = ua.getOrganization() != null ? ua.getOrganization().getPartyId() : null;
-
-                        // Get all permissions from roles assigned to this user
-                        if (user.getUserRoles() != null) {
-                            user.getUserRoles().forEach(ur -> {
-                                if (ur.getRole() != null && ur.getRole().getPermissions() != null) {
-                                    ur.getRole().getPermissions().forEach(rp -> {
-                                        Permission permission = rp.getPermission();
-                                        if (permission != null) {
-                                            permList.add(new UserProfileResponse.PermissionInfo(
-                                                    app != null ? app.getCode() : null,
-                                                    permission.getCode(),
-                                                    permission.getUrl(),
-                                                    orgId
-                                            ));
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                        return permList.stream();
-                    })
-                    .collect(Collectors.toList());
-        }
 
         return new UserProfileResponse(
                 user.getId(),
@@ -214,7 +172,6 @@ public class UserServiceImpl implements UserService {
                 party != null ? party.getPersonnelCode() : null,
                 party != null ? party.getAvatarUrl() : null,
                 roles,
-                permissions,
                 identifiers,
                 contacts
         );

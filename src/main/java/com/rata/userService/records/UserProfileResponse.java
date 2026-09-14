@@ -10,23 +10,12 @@ public record UserProfileResponse(
         String personnelCode,
         String avatarUrl,
         List<RoleInfo> roles,
-        List<PermissionInfo> permissions,
         List<IdentifierInfo> identifiers,
         List<ContactInfo> contacts
 ) {
     public record RoleInfo(
             Long roleId,
-            String roleName,
-            String roleCode,
-            Long organizationId,
-            String organizationName
-    ) {}
-    
-    public record PermissionInfo(
-            String appCode,
-            String permissionCode,
-            String permissionUrl,
-            Long organizationId
+            String roleName
     ) {}
 
     public record IdentifierInfo(
